@@ -16,6 +16,7 @@ void delay(uint32_t seg)
 // Codigo principal a ejecutar.
 int main()
 {
+    // Inicializacion de variables a usar.
     uint8_t valorLectura;
     int i = 0;
     int j = 0;
@@ -23,6 +24,7 @@ int main()
     uint32_t valorADC = 0;
 
     uint8_t ultimoValorLectura;
+    uint8_t flagFull = 0;
     uint8_t flag = 0;
     uint8_t valorPare;
 
@@ -92,41 +94,49 @@ int main()
 
             else if (valorLectura == "g")
             {
-                for(j=0; j < 10; j++)
+                if(flagFull == 0)
                 {
-                    // La bandera flag se va a usar como señal para ...
-                    // guardar una posicion cuando cambie a 1.
-                    flag = 0;
-                    do
+                    flagFull = 1;
+                    for(j=0; j < 10; j++)
                     {
-                        for(k=0; k < 4; k++)
+                        // La bandera flag se va a usar como señal para ...
+                        // guardar una posicion cuando cambie a 1.
+                        flag = 0;
+                        do
                         {
-                            // Lectura de los puertos ADC (0; 1; 2 y 3).
-                            arregloNumeros[j][k] = leerPuerto(k);
-                            // Se envian los datos a los temporizadores para ...
-                            // que el usuario pueda ver las posiciones que ...
-                            // esta guardando.
-                            cambiarAngulo(k+1,arregloNumeros[j][k]);
-                        }
+                            for(k=0; k < 4; k++)
+                            {
+                                // Lectura de los puertos ADC (0; 1; 2 y 3).
+                                arregloNumeros[j][k] = leerPuerto(k);
+                                // Se envian los datos a los temporizadores para ...
+                                // que el usuario pueda ver las posiciones que ...
+                                // esta guardando.
+                                cambiarAngulo(k+1,arregloNumeros[j][k]);
+                            }
 
-                        // Cuando el caracter 'r' se envie por el periferico UART ...
-                        // se cambia el estado de la bandera 'flag' a 1 indicando ...
-                        // que se guarde esa posicion de los 4 servomotores.
-                        if (USART1->SR & (1<<5))
-                        {
-                            valorPare = leerCaracter();
-                            if (valorPare == "r")
+                            // Cuando el caracter 'r' se envie por el periferico UART ...
+                            // se cambia el estado de la bandera 'flag' a 1 indicando ...
+                            // que se guarde esa posicion de los 4 servomotores.
+                            if (USART1->SR & (1<<5))
                             {
-                                flag = 1;
+                                valorPare = leerCaracter();
+                                if (valorPare == "r")
+                                {
+                                    flag = 1;
+                                }
+                                // En el caso se envie un caracter incorrecto, se envia ...
+                                // un mensaje de error.
+                                else
+                                {
+                                    enviarPalabra("Presione 'r' para guardar la posicion.");
+                                }
                             }
-                            // En el caso se envie un caracter incorrecto, se envia ...
-                            // un mensaje de error.
-                            else
-                            {
-                                enviarPalabra("Presione 'r' para guardar la posicion.");
-                            }
-                        }
-                    }while(flag == 0);
+                        }while(flag == 0);
+                    }
+                }
+                else
+                {
+                    enviarPalabra("ARREGLO LLENO");
                 }
             }
             else if (valorLectura == "h")
@@ -166,8 +176,11 @@ int main()
                     }
                 }
                 // Dado que es un reinicio, terminado este proceso ...
-                // se envia al robot a la opción de inhabilitado.
+                // se envia al robot a la opción de inhabilitado y ...
+                // se coloca en cero la bandera flagFull, para poder ...
+                // leer nuevos datos en caso se requiera.
                 valorLectura = "a";
+                flagFull = 0;
                 
                 // Se pone en 0 el contador "i", para asegurar que la lógica ...
                 // de presentar el mensaje de "Brazo robótico inhabilitado" ...
