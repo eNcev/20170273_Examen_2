@@ -14,8 +14,8 @@ void TIM3_Init()
     // Habilitar el temporizador 3 (bit 1 del registro RCC_APB1ENR)
 	RCC->APB1ENR |= (1<<1);
 
-    // Configuración de los pines PA6, PA7, PB1 y PB2 como salidas ...
-    // alternativas con una velocidad máxima de 2MHz
+    // Configuracion de los pines PA6, PA7, PB1 y PB2 como salidas ...
+    // alternativas con una velocidad maxima de 2MHz
 
     GPIOA->CRL &= ~((0xF << 24)|(0xF << 28));
 	GPIOA->CRL |= (0xA << 24)|(0xA << 28);
@@ -31,7 +31,7 @@ void TIM3_Init()
     TIM3->PSC = 15;
 	TIM3->ARR = 10000;
 
-    // Configuración de los canales a usar del temporizador 3: 
+    // Configuracion de los canales a usar del temporizador 3: 
     // canal 1; 2; 3 y 4 (duty cycle = 0 %).
 	TIM3->CCR1 = 0;
     TIM3->CCR2 = 0;
@@ -50,7 +50,7 @@ void TIM3_Init()
     TIM3->CCMR2 |= (0x68 << 0);
     TIM3->CCMR2 |= (0x68 << 8);
 	
-    // Habilitar el modo de comparación de los 4 canales (poner en ALTA: el bit 0, ...
+    // Habilitar el modo de comparacion de los 4 canales (poner en ALTA: el bit 0, ...
     // bit 4, bit 8 y bit 12 del registro TIM3_CCER)
     TIM3->CCER |= (1 << 12)|(1 << 8)|(1 << 4)|(1 << 0);
 
@@ -60,10 +60,10 @@ void TIM3_Init()
 
 }
 
-// Se define la función para transformar el valor leido de un ADC (res: 4096), al duty cycle ...
-// de su salida PWM respectiva. Se debe resaltar, que se pone como un "ángulo" inicial ...
+// Se define la funcion para transformar el valor leido de un ADC (res: 4096), al duty cycle ...
+// de su salida PWM respectiva. Se debe resaltar, que se pone como un "angulo" inicial ...
 // un valor de 1000 (para evitar que llegue a 0) y un "angulo" final con el valor ...
-// máximo a contar (10000)
+// maximo a contar (10000)
 
 void cambiarAngulo(uint8_t canal, uint32_t valorADC)
 {
