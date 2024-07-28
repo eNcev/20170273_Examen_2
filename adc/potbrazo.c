@@ -9,7 +9,7 @@
 
 void initADC()
 {
-    // Habilitar laa señales alternativas de los puertos GPIO, ...
+    // Habilitar las señales alternativas de los puertos GPIO, ...
     // ... la señal de reloj del puerto A y el modulo ADC1 ...
     // (bit 0; 2 y 9 del registro RCC_APB2ENR)
     RCC->APB2ENR |= (1<<0)|(1<<2)|(1<<9);
@@ -31,8 +31,6 @@ void initADC()
     ADC1->SQR1 &= ~(0xFFFFFF);
     ADC1->SQR2 &= ~(0x3FFFFFFF);
 
-    // La configuración
-
     // Del registro ADC_CR1, se colocan en baja los bits 0 al 19 y, 22 y 23
     ADC1->CR1 &= ~((0xFFFFF) | (0xC << 20));
 
@@ -51,7 +49,7 @@ uint16_t leerPuerto(uint8_t channel)
     // En el registro ADC_SQR3, se configurará el canal a ser leido, según la ...
     // variable de entrada
     ADC1->SQR3 &= ~(0x3FFFFFFF);
-    ADC1->SQR3 |= channel << 0;
+    ADC1->SQR3 |= (channel << 0);
 
     // Del registro ADC_CR2, se coloca en ALTA el bit 0 y 22 para iniciar la ...
     // de datos analógicos a digitales en los canales previamente configurados:
